@@ -1,7 +1,29 @@
-import express from 'express'
+import express, { Request, Response } from 'express';
+import cors from 'cors';
 
-const app = express()
+const app = express();
 
-app.listen(3000)
+// Middlewares
+app.use(cors());
+app.use(express.json());
 
-console.log("servidor iniciado")
+// Tipos para os objetos de resposta
+interface ApiResponse {
+  message: string;
+}
+
+interface HealthResponse {
+  status: string;
+}
+
+// Rota básica para teste
+app.get('/', (req: Request, res: Response<ApiResponse>) => {
+  res.json({ message: 'Bem-vindo à API Voluntários para Hospitais!' });
+});
+
+// Health check
+app.get('/health', (req: Request, res: Response<HealthResponse>) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+export default app;

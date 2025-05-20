@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int             @id @default(autoincrement())
+  name             String
+  email            String          @unique
+  password         String
+  role             UserRole        @default(VOLUNTEER)
+  phone            String?         
+  bio              String?         @db.Text
+  points           Int             @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  applications     Application[]
+  completedTasks   CompletedTask[]
+}
+
+enum UserRole {
+  ADMIN
+  VOLUNTEER
+}
+
+model Vacancy {
+  id               Int             @id @default(autoincrement())
+  title            String
+  description      String          @db.Text
+  type             String
+  status           VacancyStatus   @default(OPEN)
+  points           Int             @default(10)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  applications     Application[]
+  completedTasks   CompletedTask[]
+}
+
+enum VacancyStatus {
+  OPEN
+  CLOSED
+}
+
+model Application {
+  id               Int               @id @default(autoincrement())
+  userId           Int
+  vacancyId        Int
+  status           ApplicationStatus @default(PENDING)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  user             User              @relation(fields: [userId], references: [id])
+  vacancy          Vacancy           @relation(fields: [vacancyId], references: [id])
+
+  @@unique([userId, vacancyId])
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+model CompletedTask {
+  id               Int              @id @default(autoincrement())
+  userId           Int
+  vacancyId        Int
+  pointsEarned     Int
+  completedAt      DateTime         @default(now())
+  user             User             @relation(fields: [userId], references: [id])
+  vacancy          Vacancy          @relation(fields: [vacancyId], references: [id])
+}
