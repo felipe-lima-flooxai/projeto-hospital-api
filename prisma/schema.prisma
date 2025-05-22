@@ -1,0 +1,68 @@
+// Prisma file com as models dos dados
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id          String   @id @default(uuid())
+  username    String   @unique
+  password    String
+  email       String   @unique
+  fullname    String
+  isAdmin     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  totalPoints Int      @default(0)
+  scolarity   String?  // Escolaridade
+  birthDate   DateTime?
+  cpf         String?  @unique
+  profession  String?
+  adress      String?  // Endereço
+  cep         String?
+
+  // Relacionamentos
+  vagasCriadas    Vagas[]        @relation("VagaCriador")
+  candidaturas    UsuarioVagas[]
+
+  @@map("usuarios")
+}
+
+model Vagas {
+  id           String   @id @default(uuid())
+  type         String   // Tipo da vaga (Idosos/Crianças)
+  title        String   //titulo da vaga
+  description  String   //descricao da vaga
+  rewardPoints Int      // Pontos de recompensa
+  taskDate     DateTime // Data da tarefa
+  creatorID    String   //id do usuario criador
+  createdAt    DateTime @default(now())  //data criacao
+  updatedAt    DateTime @updatedAt       //data update
+  status       String   @default("Aberta") // Aberta, Fechada, Pausada
+
+  // Relacionamentos
+  criador      Usuario        @relation("VagaCriador", fields: [creatorID], references: [id])
+  candidaturas UsuarioVagas[]
+
+  @@map("vagas")
+}
+
+model UsuarioVagas {
+  id       String @id @default(uuid())  //id do relacionamento
+  userID   String //id usuario aplicante
+  vagaID  String // Corrigindo o nome para manter consistência
+  status   String @default("Pendente") // Pendente, Aprovado, Recusado, Concluido
+
+  // Relacionamentos
+  usuario Usuario @relation(fields: [userID], references: [id])
+  vaga    Vagas   @relation(fields: [vagaID], references: [id])
+
+  // Índices compostos para evitar candidaturas duplicadas
+  @@unique([userID, vagaID])
+  @@map("usuario_vagas")
+}
