@@ -1,9 +1,9 @@
 
 import app from './app';
-import { PrismaClient } from '@prisma/client';
+import prisma from "./config/prisma"
 
 //Configuração tipada
-const prisma: PrismaClient = new PrismaClient();
+
 const PORT: number = Number(process.env.PORT) || 3000;
 
 //Função assíncrona de start de server
