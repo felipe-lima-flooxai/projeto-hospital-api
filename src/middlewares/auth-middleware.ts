@@ -10,7 +10,10 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
     //token jwt fica na requisição depois de logado. 
   const token = req.headers.authorization?.split(' ')[1]; //tentando pegar o token
   //se não tem o token, não ta logado, então retorna erro. Se tem o token, código continua normalmente
-  if (!token) return res.status(401).json({ error: "Não autorizado" });
+  if (!token) {
+    res.status(401).json({ error: "Não autorizado" })
+    return 
+  } 
 
   try {
     //esse token que veio pode ser manipulado no front. Então usa a func verify com a chave jwt para ver se é mesmo
@@ -20,6 +23,7 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
     next();
   } catch (error) {
     res.status(401).json({ error: "Token inválido" });
+    return
   }
 };
 
@@ -29,6 +33,10 @@ export const isAdmin = async (req: Request, res: Response, next: NextFunction) =
   const user = await prisma.usuario.findUnique({
     where: { id: req.user.id },
   });
-  if (!user?.isAdmin) return res.status(403).json({ error: "Acesso negado" });
+  if (!user?.isAdmin) {
+    res.status(403).json({ error: "Acesso negado" });
+    return 
+  }
+    
   next();
 };
