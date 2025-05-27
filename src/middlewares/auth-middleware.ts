@@ -18,8 +18,8 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
   try {
     //esse token que veio pode ser manipulado no front. Então usa a func verify com a chave jwt para ver se é mesmo
     //daí da para achar o user
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
-    req.user = { id: decoded.id };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; isAdmin?: boolean };
+    req.user = { id: decoded.id, isAdmin: decoded.isAdmin };
     next();
   } catch (error) {
     res.status(401).json({ error: "Token inválido" });
