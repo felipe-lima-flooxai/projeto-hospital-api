@@ -7,13 +7,15 @@ export default {
     try {
       // Verifica se o usuário está autenticado. Caso nao, não é permitido se candidatar
       if (!req.user?.id) {
-        return res.status(401).json({ error: "Não autorizado" });
+        res.status(401).json({ error: "Não autorizado" });
+        return
       }
 
       //faz a validação dos dados da candidatura
       const result = CandidaturaSchema.safeParse(req.body);
       if (!result.success) {
-        return res.status(400).json({ errors: result.error.format() });
+        res.status(400).json({ errors: result.error.format() });
+        return
       }
 
       //pega id da vaga no result = req.body e passa pra 
@@ -26,7 +28,8 @@ export default {
 
       //se não achou, retorna erro
       if (!vaga) {
-        return res.status(404).json({ error: "Vaga não encontrada" });
+        res.status(404).json({ error: "Vaga não encontrada" });
+        return
       }
 
       //Se achou,  Cria a candidatura na tabela de usuarioVagas
@@ -41,17 +44,20 @@ export default {
         }
       });
 
-      return res.status(201).json(candidatura);
+    res.status(201).json(candidatura);
+    return
 
     } catch (error) {
       console.error('Erro na candidatura:', error);
       
       // Erro de candidatura duplicada
       if (error.code === 'P2002') {
-        return res.status(409).json({ error: "Você já se candidatou a esta vaga" });
+        res.status(409).json({ error: "Você já se candidatou a esta vaga" });
+        return
       }
 
-      return res.status(500).json({ error: "Erro ao processar candidatura" });
+        res.status(500).json({ error: "Erro ao processar candidatura" });
+        return
     }
   },
 
@@ -60,7 +66,8 @@ export default {
     try {
         //sem login não pode ver as candidaturas
       if (!req.user?.id) {
-        return res.status(401).json({ error: "Não autorizado" });
+        res.status(401).json({ error: "Não autorizado" });
+        return
       }
 
       //logado vai procurar todas as candidaturas
@@ -80,17 +87,19 @@ export default {
           }
         },
         orderBy: {
-          createdAt: 'desc'
+          // trocar createdAt: 'desc'
         }
       });
 
       //se deu tudo certo é esse fluxo
-      return res.json(candidaturas);
+        res.json(candidaturas);
+        return
 
       //deu merda vem pra esse
     } catch (error) {
       console.error('Erro ao buscar candidaturas:', error);
-      return res.status(500).json({ error: "Erro ao buscar candidaturas" });
+      res.status(500).json({ error: "Erro ao buscar candidaturas" });
+      return
     }
   }
 };

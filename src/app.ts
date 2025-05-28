@@ -17,6 +17,6 @@ app.use('/auth', authRoutes);
 app.use("/vagas", vagaRoutes);
 app.use("/leaderboard", leaderboardRoutes)
 app.use("/users", userRoutes)
-app.use("./candidatura", candidaturaRoutes)
+app.use("/candidatura", candidaturaRoutes)
 
 export default app;

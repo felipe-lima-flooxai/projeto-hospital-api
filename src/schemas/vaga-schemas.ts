@@ -6,8 +6,8 @@ export const CreateVagaDto = z.object({
     type: z.enum(["Crianças", "Idosos"]),
     rewardPoints: z.number().int().positive(),
     taskDate: z.string().refine(val => !isNaN(Date.parse(val)), {
-    message: "Data inválida"
-  }).transform(val => new Date(val))
+      message: "Data inválida"
+    }).transform(val => new Date(val))
 })
 
   export const UpdateVagaDto = z.object({
@@ -15,7 +15,9 @@ export const CreateVagaDto = z.object({
     description: z.string().min(15).optional(),
     type: z.enum(["Crianças", "Idosos"]).optional(),
     rewardPoints: z.number().int().positive().optional(),
-    taskDate: z.date().optional(),
+    taskDate: z.string().optional().refine(val => !isNaN(Date.parse(val)), {
+      message: "Data inválida"
+    }).transform(val => new Date(val)),
     status: z.enum(["Aberta", "Fechada", "Pausada"]).optional()
   })
 

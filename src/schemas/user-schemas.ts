@@ -5,6 +5,9 @@ export const UpdateUserDto = z.object({
   username: z.string().min(3).optional(),
   fullname: z.string().min(3).optional(),
   profession: z.string().optional(),
-  address: z.string().optional()
+  adress: z.string().optional(),
+  scolarity: z.string().optional(),
+  cpf: z.string().optional(),
+  cep: z.string().optional(),
 });
 

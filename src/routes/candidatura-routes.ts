@@ -7,7 +7,10 @@ const router = Router();
 // Candidatar-se a uma vaga
 router.post('/', isAuthenticated, CandidaturaController.candidatar);
 
-// Listar minhas candidaturas
-router.get('/minhas', isAuthenticated, CandidaturaController.minhasCandidaturas);
+// Listar todas as candidaturas
+router.get('/', isAuthenticated, CandidaturaController.minhasCandidaturas);
+
+//agora que percebi que esqueci de deletar candidatura
+//update de candidatura não é necessário nesse projeto
 
 export default router;

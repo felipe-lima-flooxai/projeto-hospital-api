@@ -87,7 +87,7 @@ interface JwtPayload {
     return;
   }
   
-  const { email, password, username, fullname } = parseResult.data;
+  const { email, password, username, fullname, isAdmin } = parseResult.data;
   
   try {
     // 1. Verificar se o usuário já existe
@@ -114,7 +114,7 @@ interface JwtPayload {
         password: hashedPassword,
         username: username,
         fullname: fullname,
-        isAdmin: false // por padrão não é admin
+        isAdmin: isAdmin 
       }
     });
     
@@ -141,15 +141,6 @@ interface JwtPayload {
   } catch (error) {
     console.error('Erro no signup:', error);
     
-    // Verificar se é erro de constraint única do Prisma
-    if (error.code === 'P2002') {
-      res.status(409).json({
-        error: 'Email já cadastrado',
-        message: 'Este email já está em uso'
-      });
-      return;
-    }
-    
     res.status(500).json({
       error: 'Erro interno no servidor',
       message: 'Ocorreu um erro durante o cadastro'
@@ -157,7 +148,11 @@ interface JwtPayload {
   }
 };
 
+  const me : RequestHandler = async(req: Request, res: Response) => {
+  res.send(req.user)
+  }
 
-  const AuthController = {login, signup}
+
+  const AuthController = {login, signup, me}
 
   export default AuthController

@@ -15,7 +15,6 @@ async function startServer(): Promise<void> {
 
     app.listen(PORT, () => {
       console.log(`Servidor rodando em http://localhost:${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
     });
   } catch (error: unknown) { 
     if (error instanceof Error) {

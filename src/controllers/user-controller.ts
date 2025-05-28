@@ -11,17 +11,19 @@ export default {
     // Verifica se o usuário está editando a si mesmo (ou é admin)
     //acho que fiz a lógica errada, depois preciso refatorar
     if (userId !== currentUserId && !req.user?.isAdmin) {
-      return res.status(403).json({ 
+       res.status(403).json({ 
         error: "Acesso negado",
         message: "Você só pode editar seu próprio perfil"
       });
+      return
     }
 
     const parseResult = UpdateUserDto.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ 
+       res.status(400).json({ 
         errors: parseResult.error.format() 
       });
+      return
     }
 
     try {
@@ -31,9 +33,10 @@ export default {
       });
 
       if (!existingUser) {
-        return res.status(404).json({ 
+         res.status(404).json({ 
           error: "Usuário não encontrado" 
         });
+        return
       }
 
       // Atualiza os dados lá no prisma
@@ -48,12 +51,17 @@ export default {
           profession: true,
           adress: true,
           createdAt: true,
-          updatedAt: true
+          updatedAt: true,
+          scolarity: true,
+          cpf: true,
+          cep: true,
+          isAdmin: true
         }
       });
 
       //fim do fluxo de sucesso
-      return res.status(200).json(updatedUser);
+       res.status(200).json(updatedUser);
+       return
 
       //fluxo erro
     } catch (error) {
@@ -61,65 +69,65 @@ export default {
       
       // Tratamento específico para erro de email duplicado
       if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        return res.status(409).json({ 
+         res.status(409).json({ 
           error: "Email já está em uso" 
         });
+        return
       }
 
-      return res.status(500).json({ 
+       res.status(500).json({ 
         error: "Erro interno no servidor" 
       });
+      return
     }
   },
 
-  
-  async updatePassword(req: Request, res: Response) {
-    const userId = req.params.id;
-    const { currentPassword, newPassword } = req.body;
+    async showUser(req: Request, res: Response) {
+        
+        const user = await prisma.usuario.findUnique({
+            where: {
+                id: req.params.id
+            }
+        })
 
-    // Verifica se o usuário está tentando mudar sua própria senha
-    if (userId !== req.user?.id) {
-      return res.status(403).json({ 
-        error: "Acesso negado",
-        message: "Você só pode alterar sua própria senha"
-      });
-    }
+        if(!user) {
+            res.status(404).send({
+                message: "user not found"
+            })
+        }
 
-    try {
-        //procura no banco de dados se o usuario existe
-      const user = await prisma.usuario.findUnique({
-        where: { id: userId }
-      });
+        res.send(user)
+    },
 
-      if (!user) {
-        return res.status(404).json({ 
-          error: "Usuário não encontrado" 
-        });
+    async removeUser(req: Request, res: Response) {
+        
+        const user = await prisma.usuario.delete({
+            where: {
+                id: req.params.id
+            }
+        })
+
+        if(!user) {
+            res.status(404).send({
+                message: "user not found so cannot delete"
+            })
+        }
+
+        res.send(user)
+    },
+
+    async showAllUsers(req: Request, res: Response) {
+      try {
+        const users = await prisma.usuario.findMany();
+
+        res.status(200).json(users);
+        return
+      } catch (error) {
+        console.error('Error on searching all users', error);
+        res.status(500).json({ error: 'Server internal error' });
+        return
       }
-
-      // Usuario existe. Verifica a senha atual
-      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!passwordMatch) {
-        return res.status(401).json({ 
-          error: "Senha atual incorreta" 
-        });
-      }
-
-      // Atualiza a senha para a senha nova.
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
-      await prisma.usuario.update({
-        where: { id: userId },
-        data: { password: hashedPassword }
-      });
-
-      return res.status(200).json({ 
-        message: "Senha atualizada com sucesso" 
-      });
-    } catch (error) {
-      console.error('Erro ao atualizar senha:', error);
-      return res.status(500).json({ 
-        error: "Erro interno no servidor" 
-      });
-    }
-  }
+    } 
 };
+
+    
