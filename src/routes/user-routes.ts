@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UserController from '../controllers/user-controller';
-import { isAuthenticated } from '../middlewares/auth-middleware';
+import { isAdmin, isAuthenticated } from '../middlewares/auth-middleware';
 
 const router = Router();
 //user post é feito no auth-router
@@ -9,12 +9,12 @@ const router = Router();
 router.put('/:id', isAuthenticated, UserController.updateUser);
 
 //rota pegar um usuario
-router.get("/:id", UserController.showUser)
+router.get("/:id", isAuthenticated, UserController.showUser)
 
 //rota para pegar todos os usuarios
-router.get("/", UserController.showAllUsers)
+router.get("/", isAuthenticated, isAdmin, UserController.showAllUsers)
 
 //rota de deletar usuario
-router.delete("/:id", UserController.removeUser)
+router.delete("/:id", isAuthenticated, isAuthenticated, UserController.removeUser)
 
 export default router;

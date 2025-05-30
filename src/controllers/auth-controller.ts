@@ -58,12 +58,14 @@ interface JwtPayload {
         process.env.JWT_SECRET as string,
         { expiresIn: '8h' }
       );
+      const bearerToken = `Bearer ${token}`
+      
 
       // 4. Retornar resposta (omitindo a senha do usuário)
       const userWithoutPassword = {...user, password: undefined}
       
         res.status(200).json({
-        token,
+        token: bearerToken,
         user: userWithoutPassword,
         message: 'Login realizado com sucesso'
       });
@@ -128,12 +130,13 @@ interface JwtPayload {
       process.env.JWT_SECRET as string,
       { expiresIn: '8h' }
     );
+    const bearerToken = `Bearer ${token}`
     
     // 5. Retornar resposta (omitindo a senha)
     const userWithoutPassword = { ...newUser, password: undefined };
     
     res.status(201).json({
-      token,
+      token: bearerToken,
       user: userWithoutPassword,
       message: 'Usuário criado com sucesso'
     });
