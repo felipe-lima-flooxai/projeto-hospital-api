@@ -2,6 +2,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,7 +15,7 @@ model Usuario {
   username    String   @unique
   password    String
   email       String   @unique
-  fullname    String
+  fullname    String?
   isAdmin     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

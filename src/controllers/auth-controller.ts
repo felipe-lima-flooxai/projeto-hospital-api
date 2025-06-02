@@ -89,7 +89,7 @@ interface JwtPayload {
     return;
   }
   
-  const { email, password, username, fullname, isAdmin } = parseResult.data;
+  const { email, password, username, isAdmin } = parseResult.data;
   
   try {
     // 1. Verificar se o usuário já existe
@@ -114,8 +114,7 @@ interface JwtPayload {
       data: {
         email: email,
         password: hashedPassword,
-        username: username,
-        fullname: fullname,
+        username: username ,
         isAdmin: isAdmin 
       }
     });
