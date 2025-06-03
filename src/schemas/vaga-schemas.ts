@@ -3,7 +3,7 @@ import {z} from "zod"
 export const CreateVagaDto = z.object({
     title: z.string().min(7, "Título deve ter o mínimo de 7 caracteres"),
     description: z.string().min(15),
-    type: z.enum(["Crianças", "Idosos"]),
+    type: z.enum(["Criancas", "Idosos"]),
     rewardPoints: z.number().int().positive(),
     taskDate: z.string().refine(val => !isNaN(Date.parse(val)), {
       message: "Data inválida"
