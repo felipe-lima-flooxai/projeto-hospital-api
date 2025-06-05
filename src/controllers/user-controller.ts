@@ -39,6 +39,11 @@ export default {
         return
       }
 
+      //transformação da data para poder ser criado no banco (mexer com data é dificil)
+      if(typeof parseResult.data.birthDate === "string"){
+        parseResult.data.birthDate = new Date(parseResult.data.birthDate)
+      }
+
       // Atualiza os dados lá no prisma
       const updatedUser = await prisma.usuario.update({
         where: { id: userId },
@@ -55,7 +60,9 @@ export default {
           scolarity: true,
           cpf: true,
           cep: true,
-          isAdmin: true
+          isAdmin: true,
+          totalPoints: true,
+          birthDate: true
         }
       });
 

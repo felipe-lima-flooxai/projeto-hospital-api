@@ -9,3 +9,10 @@ export interface listVagasRequest extends Request {
     }
 }
 
+export interface listLeaderboardRequest extends Request {
+    query: {
+        page: string,
+        limit: string
+    }
+}
+

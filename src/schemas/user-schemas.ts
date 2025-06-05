@@ -9,5 +9,10 @@ export const UpdateUserDto = z.object({
   scolarity: z.string().optional(),
   cpf: z.string().optional(),
   cep: z.string().optional(),
+  birthDate: z.union([
+    z.string().datetime(), // Para ISO strings
+    z.date(),              // Para objetos Date
+    z.null()               // Para permitir null
+  ]).optional(),
 });
 
