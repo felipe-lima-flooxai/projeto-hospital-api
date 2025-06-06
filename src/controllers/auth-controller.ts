@@ -151,7 +151,11 @@ interface JwtPayload {
 };
 
   const me : RequestHandler = async(req: Request, res: Response) => {
-  res.send(req.user)
+    const id = req.user.id
+    const user  = await prisma.usuario.findUnique({
+      where: {id}
+    })
+  res.send(user)
   }
 
 
