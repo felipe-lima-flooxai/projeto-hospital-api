@@ -84,6 +84,7 @@ export default {
       });
       res.json(vagas);
     } catch (error) {
+      console.error(error)
       res.status(500).json({ error: "Falha ao atualizar vagas" });
     }
   },
