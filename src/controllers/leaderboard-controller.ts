@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import prisma from '../config/prisma';
 import { handlePagination } from '../utils/handlePagination';
 import { listLeaderboardRequest } from '../types/requests';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../generated/prisma';
 
 export default {
     //tenta pegar o leaderboard. Se conseguir, retorna o leaderboard inteiro. Senão da erro.

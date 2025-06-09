@@ -101,5 +101,42 @@ export default {
       res.status(500).json({ error: "Erro ao buscar candidaturas" });
       return
     }
+  },
+
+
+  //funcao deletar 1 vaga especifica
+  async deletar(req: Request, res: Response) {
+    try {
+      const candidaturaID = req.params.id;
+
+      if (!req.user?.id) {
+        res.status(401).json({ error: "Não logado" });
+        return
+      }
+
+      // Verifica se a candidatura existe e pertence ao usuário
+      const candidatura = await prisma.usuarioVagas.findUnique({
+        where: { id: candidaturaID },
+      });
+
+      if (!candidatura || candidatura.userID !== req.user.id) {
+        res.status(404).json({ error: "Candidatura não encontrada ou não pertence a você" });
+        return
+      }
+
+      // Deleta a candidatura
+      await prisma.usuarioVagas.delete({
+        where: { id: candidaturaID },
+      });
+
+      res.status(200).json({ message: "Candidatura excluída com sucesso" });
+      return
+
+    } catch (error) {
+      console.error("Erro ao deletar candidatura:", error);
+      res.status(500).json({ error: "Erro interno ao deletar candidatura" });
+      return
+    }
   }
+
 };

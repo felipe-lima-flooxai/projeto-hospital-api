@@ -10,6 +10,9 @@ router.post('/', isAuthenticated, CandidaturaController.candidatar);
 // Listar todas as candidaturas
 router.get('/', isAuthenticated, CandidaturaController.minhasCandidaturas);
 
+//deletar candidatura
+router.delete('/:id', isAuthenticated, CandidaturaController.deletar);
+
 //agora que percebi que esqueci de deletar candidatura
 //update de candidatura não é necessário nesse projeto
 
