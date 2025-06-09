@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../config/prisma';
 import { CandidaturaSchema } from '../schemas/candidatura-schemas';
+import { error } from 'console';
 
 export default {
   async candidatar(req: Request, res: Response) {
@@ -20,6 +21,15 @@ export default {
 
       //pega id da vaga no result = req.body e passa pra 
       const { vagaID } = result.data;
+
+      console.log('=== DEBUG CANDIDATURA ===');
+      console.log('Environment:', process.env.NODE_ENV);
+      console.log('VagaID recebido:', vagaID);
+      console.log('Tipo do vagaID:', typeof vagaID);
+      console.log('Length do vagaID:', vagaID?.length);
+      console.log('UserID:', req.user.id);
+
+       console.log('Procurando vaga com ID:', vagaID);
 
       // Verifica se a vaga existe usando vagaID
       const vaga = await prisma.vagas.findUnique({
