@@ -22,7 +22,7 @@ model Usuario {
   totalPoints Int       @default(0)
   scolarity   String? // Escolaridade
   birthDate   DateTime?
-  cpf         String?   @unique
+  cpf         String?
   profession  String?
   adress      String? // Endereço
   cep         String?

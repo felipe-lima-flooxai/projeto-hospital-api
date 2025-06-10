@@ -4826,7 +4826,6 @@ export namespace Prisma {
     id?: string
     username?: string
     email?: string
-    cpf?: string
     AND?: UsuarioWhereInput | UsuarioWhereInput[]
     OR?: UsuarioWhereInput[]
     NOT?: UsuarioWhereInput | UsuarioWhereInput[]
@@ -4838,12 +4837,13 @@ export namespace Prisma {
     totalPoints?: IntFilter<"Usuario"> | number
     scolarity?: StringNullableFilter<"Usuario"> | string | null
     birthDate?: DateTimeNullableFilter<"Usuario"> | Date | string | null
+    cpf?: StringNullableFilter<"Usuario"> | string | null
     profession?: StringNullableFilter<"Usuario"> | string | null
     adress?: StringNullableFilter<"Usuario"> | string | null
     cep?: StringNullableFilter<"Usuario"> | string | null
     vagasCriadas?: VagasListRelationFilter
     candidaturas?: UsuarioVagasListRelationFilter
-  }, "id" | "username" | "email" | "cpf">
+  }, "id" | "username" | "email">
 
   export type UsuarioOrderByWithAggregationInput = {
     id?: SortOrder

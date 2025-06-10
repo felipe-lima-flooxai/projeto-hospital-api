@@ -113,6 +113,29 @@ export default {
     }
   },
 
+  async listarTodas(req: Request, res: Response) {
+  try {
+    const todasCandidaturas = await prisma.vagas.findMany({
+      include: {
+        candidaturas: {
+          include: {
+            usuario: {
+              select: {username: true, fullname: true, id: true}
+            }
+          }
+        }
+      }
+      
+    });
+    res.status(200).json(todasCandidaturas);
+    return 
+  } catch (error) {
+    console.error("Erro ao listar todas as candidaturas:", error);
+    res.status(500).json({ error: "Erro ao listar todas as candidaturas" });
+    return 
+  }
+},
+
 
   //funcao deletar 1 vaga especifica
   async deletar(req: Request, res: Response) {
@@ -147,6 +170,89 @@ export default {
       res.status(500).json({ error: "Erro interno ao deletar candidatura" });
       return
     }
+  },
+
+  // Adicione esta função no candidatura-controller.ts
+
+async aprovarCandidatura(req: Request, res: Response) {
+  try {
+    const { candidaturaId } = req.params;
+
+    // Verifica se o usuário é admin
+    if (!req.user?.isAdmin) {
+      res.status(403).json({ error: "Acesso negado. Apenas administradores podem aprovar candidaturas." });
+      return;
+    }
+
+    // Busca a candidatura com informações da vaga e usuário
+    const candidatura = await prisma.usuarioVagas.findUnique({
+      where: { id: candidaturaId },
+      include: {
+        vaga: true,
+        usuario: true
+      }
+    });
+
+    if (!candidatura) {
+      res.status(404).json({ error: "Candidatura não encontrada" });
+      return;
+    }
+
+    // Verifica se a vaga ainda está aberta
+    if (candidatura.vaga.status !== "Aberta") {
+      res.status(400).json({ error: "Esta vaga já foi fechada" });
+      return;
+    }
+
+    // 1. Aprova a candidatura escolhida
+    const candidaturaAprovada = await prisma.usuarioVagas.update({
+      where: { id: candidaturaId },
+      data: { status: "Aprovado" }
+    });
+
+    // 2. Rejeita todas as outras candidaturas da mesma vaga
+    await prisma.usuarioVagas.updateMany({
+      where: {
+        vagaID: candidatura.vagaID,
+        id: { not: candidaturaId }
+      },
+      data: { status: "Rejeitado" }
+    });
+
+    // 3. Fecha a vaga
+    const vagaFechada = await prisma.vagas.update({
+      where: { id: candidatura.vagaID },
+      data: { status: "Fechada" }
+    });
+
+    // 4. Busca os pontos atuais do usuário
+    const usuarioAtual = await prisma.usuario.findUnique({
+      where: { id: candidatura.userID },
+      select: { totalPoints: true }
+    });
+
+    // 5. Adiciona pontos ao usuário aprovado
+    const usuarioAtualizado = await prisma.usuario.update({
+      where: { id: candidatura.userID },
+      data: {
+        totalPoints: (usuarioAtual?.totalPoints || 0) + candidatura.vaga.rewardPoints
+      }
+    });
+
+    res.status(200).json({
+      message: "Candidatura aprovada com sucesso!",
+      data: {
+        candidaturaAprovada,
+        vagaFechada,
+        pontosAdicionados: candidatura.vaga.rewardPoints,
+        usuarioAtualizado
+      }
+    });
+
+  } catch (error) {
+    console.error("Erro ao aprovar candidatura:", error);
+    res.status(500).json({ error: "Erro interno ao aprovar candidatura" });
   }
+}
 
 };

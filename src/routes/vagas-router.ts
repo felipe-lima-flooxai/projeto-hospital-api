@@ -8,6 +8,7 @@ const router = Router();
 //passando middlewares primeiro, por ultimo o controller
 router.post('/', isAuthenticated, isAdmin, VagaController.create);
 router.get('/', VagaController.list);
+router.get('/fechadas', isAuthenticated, isAdmin, VagaController.listFechadas);
 router.put('/:id', isAuthenticated, isAdmin, VagaController.update);
 router.delete('/:id', isAuthenticated, isAdmin, VagaController.delete);
 

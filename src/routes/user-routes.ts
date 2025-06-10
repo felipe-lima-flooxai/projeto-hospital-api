@@ -15,6 +15,6 @@ router.get("/:id", isAuthenticated, UserController.showUser)
 router.get("/", isAuthenticated, isAdmin, UserController.showAllUsers)
 
 //rota de deletar usuario
-router.delete("/:id", isAuthenticated, isAuthenticated, UserController.removeUser)
+router.delete("/:id", isAuthenticated, isAdmin, UserController.removeUser)
 
 export default router;

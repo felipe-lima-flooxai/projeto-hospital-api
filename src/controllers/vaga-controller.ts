@@ -67,6 +67,56 @@ export default {
       res.status(500).json({ error: "Falha ao listar vagas" });
     }
 },
+  //começo listFechadas
+  async listFechadas(req: listVagasRequest, res: Response) {
+    const { type, minRewardPoints, page = '1', limit = '10' } = req.query;
+
+    const {pageNumber, limitNumber, skip} = handlePagination(page, limit)
+
+    const where: Prisma.VagasWhereInput = {};
+
+    if (type) {
+      where.type = type as string;
+    }
+
+    if (minRewardPoints) {
+      where.rewardPoints = {
+        gte: parseInt(minRewardPoints as string, 10),
+      };
+    }
+
+    where.status = "Fechada"
+
+    try {
+      const vagas = await prisma.vagas.findMany({
+        where,
+        skip,
+        take: limitNumber,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          candidaturas: {
+            where: { status: "Aprovado" },
+            include: {
+              usuario: {
+                select: {
+                  id: true,
+                  username: true,
+                  fullname: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const total = await prisma.vagas.count({ where });
+
+      res.json({ vagas, total });
+    } catch (error) {
+      res.status(500).json({ error: "Falha ao listar vagas fechadas" });
+    }
+  },
+  //fim listFechadas
 
     //parte do controller que faz o update
   async update(req: Request, res: Response): Promise<void> {
@@ -92,11 +142,19 @@ export default {
     //parte do controller que faz o delete
   async delete(req: Request, res: Response) {
     const { id } = req.params;
+    //console.log("id da vaga", id)
     try {
-      await prisma.vagas.delete({ where: { id } });
-      res.status(204).send();
+
+      const candDeleted = await prisma.usuarioVagas.deleteMany({
+        where: { vagaID: id },
+      });
+      //console.log(candDeleted)
+
+      const result = await prisma.vagas.delete({ where: { id } });
+      //console.log(result)
+      res.status(200).json({success: "Vaga Deletada"});
     } catch (error) {
-      res.status(500).json({ error: "Falha ao deletar vagas" });
+      res.status(500).json({ error: error.message });
     }
   },
 };
