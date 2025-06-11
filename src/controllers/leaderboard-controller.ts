@@ -16,10 +16,16 @@ export default {
 
     try {
       const users = await prisma.usuario.findMany({
+        where: {
+          totalPoints: {
+            gt: 0
+          }
+        },
         skip,
         take: limitNumber,
+        
         select: {
-          fullname: true,
+          username: true,
           totalPoints: true,
           createdAt: true,
         },
