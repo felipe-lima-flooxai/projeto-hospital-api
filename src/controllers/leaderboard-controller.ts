@@ -35,7 +35,13 @@ export default {
       });
 
 
-      const total = await prisma.usuario.count( );
+      const total = await prisma.usuario.count({
+        where: {
+          totalPoints: {
+            gt: 0
+          }
+        }
+      });
       res.status(200).json({users, total});
     } catch (error) {
       console.error('Erro ao buscar leaderboard:', error);
